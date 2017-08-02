@@ -25,9 +25,24 @@ void trans::on_close_trans_clicked()
 }
 
 void trans::Reply_net(QNetworkReply *reply){ //读取网页信息
-    QString all = reply->readAll();
-    ui->textBrowser->setText(all);
-    reply->deleteLater();
+    qDebug()<< reply->error();
+    if(reply->error() == QNetworkReply::NoError){
+        QString all = reply->readAll();
+        QString selected_all;
+        auto it = all.begin();
+        qDebug()<< all;
+        while(*it != "\""){
+            it++;
+        }
+        it++;
+        while(*it != "\""){
+            selected_all += *it;
+            it++;
+        }
+        ui->textBrowser->setText(selected_all);
+        reply->deleteLater();
+    }
+
 }
 
 void trans::paintEvent(QPaintEvent *event){
@@ -42,14 +57,17 @@ void trans::paintEvent(QPaintEvent *event){
 void trans::on_translate_clicked(){//提交翻译请求
     if(ui->textEdit->toPlainText() != ""){
         QString waittotrans = ui->textEdit->toPlainText();
-        if(ui->comboBox->currentText() == "ch->en") {
-            QString lasturl = "https://translate.google.cn/translate_a/single?client=t&sl=en&tl=zh-CN&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&source=btn&ssel=0&tsel=0&kc=0&tk=595745.1002753&q=have%20it%20or%20not";
-            manager->get(QNetworkRequest(QUrl(lasturl)));
+        QByteArray byte = waittotrans.toUtf8();
+        byte = byte.toPercentEncoding();
+        QUrl lasturl;
+        if(ui->comboBox->currentText() == "ch->en"){
+             lasturl = "http://translate.google.cn/translate_a/single?client=t&sl=zh-CN&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&source=btn&ssel=0&tsel=0&kc=0&tk=743696.853111&q=" + waittotrans;
         }
-        else if(ui->comboBox->currentText() == "en->ch"){
-            QString lasturl = "http://139.199.209.106/trans/google.action?from=en&to=zh&query=" + waittotrans;
-            manager->get(QNetworkRequest(QUrl(lasturl)));
+        else{
+            lasturl = "https://link.zhihu.com/?target=http%3A//translate.google.cn/translate_a/single%3Fclient%3Dat%26sl%3Den%26tl%3Dzh-CN%26dt%3Dt%26q%3D" + waittotrans;
         }
+        qDebug()<< lasturl;
+        manager->get(QNetworkRequest(lasturl));
     }
 }
 
