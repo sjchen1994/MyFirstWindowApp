@@ -26,7 +26,7 @@ Widget::Widget(QWidget *parent) :
     system_tray->setContextMenu(tray_menu);
     connect(mclose,SIGNAL(triggered(bool)),this,SLOT(closew()));
 
-    connect(m,SIGNAL(sendsignal()),this,SLOT(reshow()));
+    connect(m, SIGNAL(sendsignal()), this, SLOT(reshow()));
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(goto_mem()));
     //数据库
     mem_database = initial_database();
