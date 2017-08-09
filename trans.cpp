@@ -28,18 +28,16 @@ void trans::Reply_net(QNetworkReply *reply){ //读取网页信息
     qDebug()<< reply->error();
     if(reply->error() == QNetworkReply::NoError){
         QString all = reply->readAll();
-        QString selected_all;
-        auto it = all.begin();
-        qDebug()<< all;
-        while(*it != "\""){
-            it++;
+        QRegExp rx("dst\"\:\"(.*)\"");
+        int pos = all.indexOf(rx);
+        if(pos >= 0){
+            QByteArray c = rx.cap(1).toLatin1();
+            QString a = QString::fromUtf8(c);
+            a.
+            //QString b = QString::fromLocal8Bit("中文");
+            //qDebug()<< QString::fromLocal8Bit(a);
+            //ui->textBrowser->setText(QString::fromLocal8Bit(a));
         }
-        it++;
-        while(*it != "\""){
-            selected_all += *it;
-            it++;
-        }
-        ui->textBrowser->setText(selected_all);
         reply->deleteLater();
     }
 
@@ -52,24 +50,71 @@ void trans::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     QPixmap pix;
     pix.load("main.png");
-    painter.drawPixmap(0,0,350,500,pix);
+    painter.drawPixmap(0, 0, 350, 500, pix);
 }
+
 void trans::on_translate_clicked(){//提交翻译请求
     if(ui->textEdit->toPlainText() != ""){
-        QString waittotrans = ui->textEdit->toPlainText();
-        QByteArray byte = waittotrans.toUtf8();
-        byte = byte.toPercentEncoding();
-        QUrl lasturl;
-        if(ui->comboBox->currentText() == "ch->en"){
-             lasturl = "http://translate.google.cn/translate_a/single?client=t&sl=zh-CN&tl=en&hl=zh-CN&dt=at&dt=bd&dt=ex&dt=ld&dt=md&dt=qca&dt=rw&dt=rm&dt=ss&dt=t&ie=UTF-8&oe=UTF-8&source=btn&ssel=0&tsel=0&kc=0&tk=743696.853111&q=" + waittotrans;
+        QString wait_to_trans = ui->textEdit->toPlainText();
+
+        QByteArray query =  wait_to_trans.toUtf8();
+        qDebug()<< query;
+        QString lasturl = "http://api.fanyi.baidu.com/api/trans/vip/translate?";
+        QString appid = "20170809000071446";
+
+        QString from_to = ui->comboBox->currentText();
+        QString from;
+        if(from_to[0] == 'c'){
+            from.append("z");
         }
         else{
-            lasturl = "https://link.zhihu.com/?target=http%3A//translate.google.cn/translate_a/single%3Fclient%3Dat%26sl%3Den%26tl%3Dzh-CN%26dt%3Dt%26q%3D" + waittotrans;
+            from.append(from_to[0]);
         }
+        from.append(from_to[1]);
+        from.append("&");
+        QString to;
+        if(from_to[4] == 'c'){
+            to.append("z");
+        }
+        else{
+            to.append(from_to[4]);
+        }
+        to.append(from_to[5]);
+        to.append("&");
+
+        int randnum = qrand();
+        //QByteArray salt = QByteArray::number(randnum);
+        QString salt = QString::number(randnum);
+        QString secret_key = "EHy_V503R6K1gOaEBaWa";
+        QString bfmd5 = appid + query + salt + secret_key;
+        //bfmd5 = bfmd5.toUtf8();
+        //QByteArray bfmd5 = appid.toUtf8() + query + "41" + secret_key.toUtf8();
+        qDebug()<< bfmd5;
+
+        QCryptographicHash md(QCryptographicHash::Md5);
+        QByteArray ba;
+        ba.append(bfmd5);
+        md.addData(ba);
+
+        //QByteArray bb = QCryptographicHash::hash(bfmd5_to_ascii, QCryptographicHash::Md5);
+        QByteArray bb;
+        bb = md.result();
+        QString afmd5;
+        afmd5.append(bb.toHex());
+
+
+
+        appid = appid +"&";
+        salt = salt + "&";
+        query = query.toPercentEncoding();
+        query = query + "&";
+        lasturl = lasturl + "q=" + query + "from=" + from + "to=" + to + "appid=" + appid + "salt=" + salt + "sign=" + afmd5;
         qDebug()<< lasturl;
         manager->get(QNetworkRequest(lasturl));
     }
 }
+
+
 
 //移动窗口
 void trans::mousePressEvent(QMouseEvent *e)

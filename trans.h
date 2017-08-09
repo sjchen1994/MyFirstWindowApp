@@ -9,6 +9,8 @@
 #include <QtNetwork/QNetworkReply>
 #include <QMouseEvent>
 #include <QtCore>
+#include <QRegExp>
+#include <QCryptographicHash>
 
 namespace Ui {
 class trans;
@@ -23,6 +25,7 @@ public:
     ~trans();
 
 private slots:
+
     void on_close_trans_clicked();
 
     void on_translate_clicked();
