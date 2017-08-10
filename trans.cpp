@@ -31,12 +31,9 @@ void trans::Reply_net(QNetworkReply *reply){ //读取网页信息
         QRegExp rx("dst\"\:\"(.*)\"");
         int pos = all.indexOf(rx);
         if(pos >= 0){
-            QByteArray c = rx.cap(1).toLatin1();
-            QString a = QString::fromUtf8(c);
-            a.
-            //QString b = QString::fromLocal8Bit("中文");
-            //qDebug()<< QString::fromLocal8Bit(a);
-            //ui->textBrowser->setText(QString::fromLocal8Bit(a));
+            QString a = rx.cap(1);
+            QByteArray b = a.toLocal8Bit();
+            ui->textBrowser->setText(b);
         }
         reply->deleteLater();
     }

@@ -10,6 +10,7 @@
 #include <QMouseEvent>
 #include <QtCore>
 #include <QRegExp>
+#include <QTextCodec>
 #include <QCryptographicHash>
 
 namespace Ui {
