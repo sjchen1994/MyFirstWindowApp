@@ -27,7 +27,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/chenshijun/Desktop/trans.jpg</normaloff>C:/Users/chenshijun/Desktop/trans.jpg</iconset>
+     <normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/fanyi.jpg</normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/fanyi.jpg</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -50,7 +50,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/chenshijun/Desktop/mem.jpg</normaloff>C:/Users/chenshijun/Desktop/mem.jpg</iconset>
+     <normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/mem.jpg</normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/mem.jpg</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -86,7 +86,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/chenshijun/Desktop/calc.ico</normaloff>C:/Users/chenshijun/Desktop/calc.ico</iconset>
+     <normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/calc.ico</normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/calc.ico</iconset>
    </property>
    <property name="iconSize">
     <size>
@@ -109,7 +109,7 @@
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>C:/Users/chenshijun/Desktop/plan.ico</normaloff>C:/Users/chenshijun/Desktop/plan.ico</iconset>
+     <normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/plan.ico</normaloff>D:/project/qtproject/build-Mysoftware-Desktop_Qt_5_9_0_MSVC2013_64bit-Debug/debug/plan.ico</iconset>
    </property>
    <property name="iconSize">
     <size>

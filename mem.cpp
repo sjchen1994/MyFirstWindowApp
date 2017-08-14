@@ -51,6 +51,9 @@ void mem::get_table(){//从数据库中读取数据并绑定到tablewidget
             qDebug()<< query.lastError();
         }
         else{
+            if(!query.first()){
+                emit this->noCord();
+            }
             while(query.next()){
                 current_rowcount = ui->tableWidget->rowCount();
                 ui->tableWidget->setRowCount(current_rowcount+1);

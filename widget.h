@@ -40,6 +40,7 @@ public:
     trans *t;
     plantask *p;
 private slots:
+    void frameHide();
     void reshow();
     void goto_mem();
     void closew();

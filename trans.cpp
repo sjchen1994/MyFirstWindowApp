@@ -31,9 +31,18 @@ void trans::Reply_net(QNetworkReply *reply){ //读取网页信息
         QRegExp rx("dst\"\:\"(.*)\"");
         int pos = all.indexOf(rx);
         if(pos >= 0){
-            QString a = rx.cap(1);
-            QByteArray b = a.toLocal8Bit();
-            ui->textBrowser->setText(b);
+            QString str = rx.cap(1);
+            while(true){
+                int idx = str.indexOf("\\u");
+                if(idx == -1){
+                    break;
+                }
+                QString strhex = str.mid(idx, 6);
+                strhex = strhex.replace("\\u", QString());
+                int nhex = strhex.toInt(0, 16);
+                str.replace(idx, 6, QChar(nhex));
+                ui->textBrowser->setText(str);
+            }
         }
         reply->deleteLater();
     }

@@ -36,6 +36,7 @@ public:
     bool label;
     ~mem();
 signals:
+    void noCord();
     void sendsignal();
 private slots:
     void on_backtomain_clicked();

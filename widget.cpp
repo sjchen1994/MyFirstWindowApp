@@ -28,6 +28,7 @@ Widget::Widget(QWidget *parent) :
 
     connect(m, SIGNAL(sendsignal()), this, SLOT(reshow()));
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(goto_mem()));
+    qDebug()<<connect(m, SIGNAL(noCord()), this, SLOT(frameHide()));
     //数据库
     mem_database = initial_database();
     QSqlQuery tmp_query(mem_database);
@@ -93,6 +94,10 @@ void Widget::closew(){
 
 int Widget::getclosed(){
     return isclosed;
+}
+
+void Widget::frameHide(){
+    ui->listWidget->setVisible(false);
 }
 
 void Widget::reshow(){
