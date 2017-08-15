@@ -33,15 +33,22 @@ void trans::Reply_net(QNetworkReply *reply){ //读取网页信息
         if(pos >= 0){
             QString str = rx.cap(1);
             while(true){
-                int idx = str.indexOf("\\u");
-                if(idx == -1){
+                if(ui->comboBox->currentText() == "en->ch"){
+                    int idx = str.indexOf("\\u");
+                    if(idx == -1){
+                        break;
+                    }
+                    QString strhex = str.mid(idx, 6);
+                    strhex = strhex.replace("\\u", QString());
+                    int nhex = strhex.toInt(0, 16);
+                    str.replace(idx, 6, QChar(nhex));
+                    ui->textBrowser->setText(str);
+                }
+                else{
+                    ui->textBrowser->setText(str);
                     break;
                 }
-                QString strhex = str.mid(idx, 6);
-                strhex = strhex.replace("\\u", QString());
-                int nhex = strhex.toInt(0, 16);
-                str.replace(idx, 6, QChar(nhex));
-                ui->textBrowser->setText(str);
+
             }
         }
         reply->deleteLater();
