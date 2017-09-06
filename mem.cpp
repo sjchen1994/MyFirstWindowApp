@@ -12,9 +12,9 @@ mem::mem(QWidget *parent) :
     ui->tableWidget->setColumnCount(4);
     ui->tableWidget->setHorizontalHeaderLabels(QStringList()<<""<<"content"<<"time"<<"id");
     ui->tableWidget->setColumnWidth(0,18);
-    ui->tableWidget->setColumnWidth(1,150);
-    ui->tableWidget->setColumnWidth(2,170);
-    ui->tableWidget->setColumnWidth(3,150);
+    ui->tableWidget->setColumnWidth(1,100);
+    ui->tableWidget->setColumnWidth(2,70);
+    ui->tableWidget->setColumnWidth(3,50);
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui->tableWidget->verticalHeader()->setVisible(false);
@@ -42,25 +42,23 @@ mem::~mem()
 void mem::get_table(){//从数据库中读取数据并绑定到tablewidget
     QString  get_sql = "select * from mem";
     int current_rowcount;
+    QSqlQuery tmp(mem_database);
     if(!mem_database.open()){
         qDebug() << "Error: Failed to connect database." << mem_database.lastError();
     }
     else{
-        query.prepare(get_sql);
-        if(!query.exec()){
+        tmp.prepare(get_sql);
+        if(!tmp.exec()){
             qDebug()<< query.lastError();
         }
         else{
-            if(!query.first()){
-                emit this->noCord();
-            }
-            while(query.next()){
+            while(tmp.next()){
                 current_rowcount = ui->tableWidget->rowCount();
                 ui->tableWidget->setRowCount(current_rowcount+1);
-                bool get_check = query.value(1).toBool();
-                QString get_text = query.value(2).toString();
-                QString get_time = query.value(3).toString();
-                QString get_id = query.value(0).toString();
+                bool get_check = tmp.value(1).toBool();
+                QString get_text = tmp.value(2).toString();
+                QString get_time = tmp.value(3).toString();
+                QString get_id = tmp.value(0).toString();
                 QTableWidgetItem *tmp_checkbox = new QTableWidgetItem;
                 //1
                 if(get_check == true){
@@ -169,7 +167,7 @@ QSqlDatabase mem::databaseinitial(){//数据库连接初始化
     }
     else{
         tmp_database = QSqlDatabase::addDatabase("QSQLITE");
-        tmp_database.setDatabaseName("men_database.db");
+        tmp_database.setDatabaseName("men1_database.db");
     }
     return tmp_database;
 }

@@ -8,11 +8,12 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    m = new mem;
-    t = new trans;
-    p = new plantask;
+
+
+
     isclosed = 0;
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::Tool);
+
     //this->setWindowOpacity(0.8);
 
     //托盘图标设置
@@ -26,9 +27,9 @@ Widget::Widget(QWidget *parent) :
     system_tray->setContextMenu(tray_menu);
     connect(mclose,SIGNAL(triggered(bool)),this,SLOT(closew()));
 
-    connect(m, SIGNAL(sendsignal()), this, SLOT(reshow()));
+
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(goto_mem()));
-    qDebug()<<connect(m, SIGNAL(noCord()), this, SLOT(frameHide()));
+    //()<<connect(m, SIGNAL(noCord()), this, SLOT(frameHide()));
     //数据库
     mem_database = initial_database();
     QSqlQuery tmp_query(mem_database);
@@ -38,7 +39,6 @@ Widget::Widget(QWidget *parent) :
 
 void Widget::paintEvent(QPaintEvent *event){
     Q_UNUSED(event);
-
     //画背景
     QPainter painter(this);
     QPixmap pix;
@@ -107,6 +107,7 @@ void Widget::reshow(){
 }
 
 void Widget::get_table(){
+
     QString  get_sql = "select * from mem";
     if(!mem_database.open()){
         qDebug() << "Error: Failed to connect database." << mem_database.lastError();
@@ -120,12 +121,16 @@ void Widget::get_table(){
             while(query.next()){
                 QString get_text = query.value(2).toString();
                 ui->listWidget->addItem(get_text);
-
-
             }
         }
     }
     mem_database.close();
+    if(ui->listWidget->count() == 0){
+        ui->listWidget->setVisible(false);
+    }
+    else{
+        ui->listWidget->setVisible(true);
+    }
 }
 
 
@@ -139,12 +144,15 @@ void Widget::goto_mem(){
 void Widget::on_memButton_clicked()//备忘录按钮
 {
     this->hide();
+    m = new mem;
+    connect(m, SIGNAL(sendsignal()), this, SLOT(reshow()));
     m->show();
     m->setGeometry(this->x(),this->y(),180,350);
 }
 
 void Widget::on_transButton_clicked()//翻译按钮
 {
+    t = new trans;
     t->show();
     t->setGeometry(this->x(),this->y(),180,350);
 }
@@ -152,6 +160,7 @@ void Widget::on_transButton_clicked()//翻译按钮
 
 void Widget::on_plantask_clicked()//定时关机按钮
 {
+    p = new plantask;
     p->show();
     p->setGeometry(this->x(),this->y(),180,350);
 }
