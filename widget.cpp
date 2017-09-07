@@ -8,12 +8,15 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-
+    this->setAcceptDrops(true);
 
 
     isclosed = 0;
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::Tool);
-
+    ui->calc->setIcon(QIcon(":/image/calc.png"));
+    ui->plantask->setIcon(QIcon(":/image/plan.png"));
+    ui->transButton->setIcon(QIcon(":/image/fanyi.jpg"));
+    ui->memButton->setIcon(QIcon(":/image/mem.jpg"));
     //this->setWindowOpacity(0.8);
 
     //托盘图标设置
@@ -35,6 +38,46 @@ Widget::Widget(QWidget *parent) :
     QSqlQuery tmp_query(mem_database);
     query = tmp_query;
     get_table();
+    init_oper();
+}
+
+void Widget::init_oper(){
+    int clear_recycle = 0;
+    int higher30 = 0;
+    QDateTime dt = QDateTime::currentDateTime();
+    QFile file("time.txt");
+    if(file.open(QIODevice::ReadOnly)){
+        QTextStream stream(&file);
+        int year = stream.readLine().toInt();
+        int month = stream.readLine().toInt();
+        int day = stream.readLine().toInt();
+        QDate pre(year, month, day);
+
+        if(pre.daysTo(dt.date()) > 30){
+            //清空回收站
+            higher30 = 1;
+            SHEmptyRecycleBin(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI |SHERB_NOSOUND);
+        }
+        file.close();
+    }
+    else{
+        if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
+            QTextStream stream(&file);
+            stream<<dt.date().year()<<endl<<dt.date().month()<<endl<<dt.date().day();
+        }
+        file.close();
+    }
+    if(higher30 == 1){
+        higher30 = 0;
+        if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
+            QTextStream stream(&file);
+            stream<<dt.date().year()<<endl<<dt.date().month()<<endl<<dt.date().day();
+        }
+        file.close();
+    }
+
+
+
 }
 
 void Widget::paintEvent(QPaintEvent *event){
@@ -189,4 +232,68 @@ void Widget::mouseReleaseEvent(QMouseEvent *e)
     int dx = e->globalX() - last.x();
     int dy = e->globalY() - last.y();
     move(x()+dx, y()+dy);
+}
+
+void Widget::dragEnterEvent(QDragEnterEvent *e){
+    e->acceptProposedAction();
+
+}
+void Widget::dragMoveEvent(QDragMoveEvent *e){
+
+}
+
+void Widget::dropEvent(QDropEvent *e){
+    QList<QUrl> urls = e->mimeData()->urls();
+    if(urls.empty()){
+        return;
+    }
+    QMessageBox::StandardButton rb = QMessageBox::question(NULL, QString::fromLocal8Bit("警告！"), QString::fromLocal8Bit("确定要删除选定文件吗？"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    if(rb == QMessageBox::Yes){
+        for(QUrl url: urls){
+            QString file_name = url.toLocalFile();
+            QFileInfo file_info(file_name);
+            if(file_info.isFile()){//如果选中的有文件，就直接删除
+                QFile::remove(file_name);
+            }
+            else if(file_info.isDir()){//是文件夹
+                QDir dir(file_name);
+                QFileInfo cur_file;
+                QFileInfoList file_listtmp;
+                int info_num;
+                //获取文件夹下的所有文件（包括文件夹）
+                QFileInfoList file_list = dir.entryInfoList(QDir::Dirs | QDir::Files | QDir::Readable | QDir::Writable | QDir::Hidden | QDir::NoDotAndDotDot, QDir::Name);
+                while(file_list.size() > 0){
+                    info_num = file_list.size();
+                    //遍历，如果有文件就删除，有文件夹的话读取
+                    for(int i = info_num -1; i >= 0; i--){
+                        cur_file = file_list[i];
+
+                        if(cur_file.isFile()){
+                            QFile::remove(cur_file.filePath());
+                            file_list.removeAt(i);
+                            continue;
+                        }
+
+                        if(cur_file.isDir()){
+                            QDir dirtmp(cur_file.filePath());
+                            file_listtmp = dirtmp.entryInfoList(QDir::Dirs | QDir::Files | QDir::Readable | QDir::Writable | QDir::Hidden | QDir::NoDotAndDotDot, QDir::Name);
+
+                            if(file_listtmp.size() == 0){//空文件夹 ，删除
+                                dirtmp.rmdir(".");
+                                file_list.removeAt(i);
+                            }
+                            else{//不是空文件夹，将目录加入待删除的列表中
+                                for(int j = 0; j < file_listtmp.size(); j++){
+                                    if(!(file_list.contains(file_listtmp[j]))){
+                                        file_list.append(file_listtmp[j]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                dir.rmdir(".");
+            }
+        }
+    }
 }

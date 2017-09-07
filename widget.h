@@ -14,6 +14,8 @@
 #include <QProcess>
 #include <QMessageBox>
 #include <QMouseEvent>
+#include <QTextEdit>
+#include <windows.h>
 #include "plantask.h"
 #include "mem.h"
 #include "trans.h"
@@ -39,6 +41,7 @@ public:
     mem *m;
     trans *t;
     plantask *p;
+    void init_oper();
 private slots:
     void frameHide();
     void reshow();
@@ -57,11 +60,15 @@ signals:
 
 
 private:
+    QTextEdit *textedit;
     QPoint last;
     QMenu *tray_menu = new QMenu(this);
     QSystemTrayIcon *system_tray = new QSystemTrayIcon(this);
     Ui::Widget *ui;
 protected:
+    void dragEnterEvent(QDragEnterEvent *e);
+    void dragMoveEvent(QDragMoveEvent *e);
+    void dropEvent(QDropEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
