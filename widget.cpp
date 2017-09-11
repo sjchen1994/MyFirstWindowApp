@@ -8,8 +8,15 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
+    ui->recycle_clear_show->clear();
+    ui->pushButton->setVisible(false);
     this->setAcceptDrops(true);
 
+    //设置背景
+    this->setAutoFillBackground(true);
+    QPalette pal;
+    pal.setBrush(QPalette::Background, QBrush(QPixmap("://image/main.png")));
+    this->setPalette(pal);
 
     isclosed = 0;
     this->setWindowFlags(Qt::FramelessWindowHint|Qt::WindowStaysOnTopHint|Qt::Tool);
@@ -42,7 +49,6 @@ Widget::Widget(QWidget *parent) :
 }
 
 void Widget::init_oper(){
-    int clear_recycle = 0;
     int higher30 = 0;
     QDateTime dt = QDateTime::currentDateTime();
     QFile file("time.txt");
@@ -53,10 +59,31 @@ void Widget::init_oper(){
         int day = stream.readLine().toInt();
         QDate pre(year, month, day);
 
-        if(pre.daysTo(dt.date()) > 30){
+        if(pre.daysTo(dt.date()) > 3){
             //清空回收站
             higher30 = 1;
-            SHEmptyRecycleBin(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI |SHERB_NOSOUND);
+            /*ui->pushButton->setVisible(true);
+
+            QTime current_time = QTime::currentTime();
+            QString show_label;
+            while(true){
+                show_label = "即将清空回收站，还有";
+
+                show_label += (QString::number(15 - current_time.secsTo(QTime::currentTime())) + "...  如若取消，请点击" );
+                ui->recycle_clear_show->setText(show_label);
+                if(current_time.secsTo(QTime::currentTime()) == 16){
+                    break;
+                }
+            }
+
+            if(this->delete_ornot == true){
+                SHEmptyRecycleBin(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI |SHERB_NOSOUND);
+                ui->recycle_clear_show->clear();
+            }*/
+            QMessageBox::StandardButton rb = QMessageBox::question(NULL, QString::fromLocal8Bit("警告！"), QString::fromLocal8Bit("即将清空回收站，是否确定？"), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+            if(rb == QMessageBox::Yes){
+                SHEmptyRecycleBin(NULL, NULL, SHERB_NOCONFIRMATION | SHERB_NOPROGRESSUI |SHERB_NOSOUND);
+            }
         }
         file.close();
     }
@@ -236,7 +263,6 @@ void Widget::mouseReleaseEvent(QMouseEvent *e)
 
 void Widget::dragEnterEvent(QDragEnterEvent *e){
     e->acceptProposedAction();
-
 }
 void Widget::dragMoveEvent(QDragMoveEvent *e){
 
@@ -296,4 +322,17 @@ void Widget::dropEvent(QDropEvent *e){
             }
         }
     }
+}
+
+void Widget::on_pushButton_clicked()
+{
+    this->delete_ornot = false;
+    ui->pushButton->setVisible(false);
+}
+
+void Widget::on_call_wechat_released()
+{
+    w = new wechat;
+    w->show();
+    w->setGeometry(this->x(), this->y()+400, 180, 350);
 }

@@ -25,7 +25,6 @@ void trans::on_close_trans_clicked()
 }
 
 void trans::Reply_net(QNetworkReply *reply){ //读取网页信息
-    qDebug()<< reply->error();
     if(reply->error() == QNetworkReply::NoError){
         QString all = reply->readAll();
         QRegExp rx("dst\"\:\"(.*)\"");
@@ -102,7 +101,6 @@ void trans::on_translate_clicked(){//提交翻译请求
         QString bfmd5 = appid + query + salt + secret_key;
         //bfmd5 = bfmd5.toUtf8();
         //QByteArray bfmd5 = appid.toUtf8() + query + "41" + secret_key.toUtf8();
-        qDebug()<< bfmd5;
 
         QCryptographicHash md(QCryptographicHash::Md5);
         QByteArray ba;
@@ -115,14 +113,12 @@ void trans::on_translate_clicked(){//提交翻译请求
         QString afmd5;
         afmd5.append(bb.toHex());
 
-
-
         appid = appid +"&";
         salt = salt + "&";
         query = query.toPercentEncoding();
         query = query + "&";
         lasturl = lasturl + "q=" + query + "from=" + from + "to=" + to + "appid=" + appid + "salt=" + salt + "sign=" + afmd5;
-        qDebug()<< lasturl;
+        qDebug()<<lasturl;
         manager->get(QNetworkRequest(lasturl));
     }
 }

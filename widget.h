@@ -16,6 +16,7 @@
 #include <QMouseEvent>
 #include <QTextEdit>
 #include <windows.h>
+#include <wechat.h>
 #include "plantask.h"
 #include "mem.h"
 #include "trans.h"
@@ -38,6 +39,7 @@ public:
     int isclosed;
     int getclosed();
     void get_table();
+    wechat *w;
     mem *m;
     trans *t;
     plantask *p;
@@ -54,12 +56,17 @@ private slots:
 
     void on_calc_clicked();
 
+    void on_pushButton_clicked();
+
+    void on_call_wechat_released();
+
 signals:
     void sendsignal();
 
 
 
 private:
+    bool delete_ornot = true;
     QTextEdit *textedit;
     QPoint last;
     QMenu *tray_menu = new QMenu(this);

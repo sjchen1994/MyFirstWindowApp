@@ -29,17 +29,20 @@ SOURCES += main.cpp\
         widget.cpp \
     mem.cpp \
     trans.cpp \
-    plantask.cpp
+    plantask.cpp \
+    wechat.cpp
 
 HEADERS  += widget.h \
     mem.h \
     trans.h \
-    plantask.h
+    plantask.h \
+    wechat.h
 
 FORMS    += widget.ui \
     mem.ui \
     trans.ui \
-    plantask.ui
+    plantask.ui \
+    wechat.ui
 
 DISTFILES +=
 

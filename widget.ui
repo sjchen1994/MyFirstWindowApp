@@ -152,12 +152,63 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>160</y>
+     <y>220</y>
      <width>121</width>
-     <height>151</height>
+     <height>121</height>
     </rect>
    </property>
   </widget>
+  <widget class="QLabel" name="recycle_clear_show">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>330</y>
+     <width>54</width>
+     <height>12</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>325</y>
+     <width>71</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>停止删除</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="call_wechat">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>170</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>pushButton</zorder>
+  <zorder>transButton</zorder>
+  <zorder>memButton</zorder>
+  <zorder>mem_output</zorder>
+  <zorder>calc</zorder>
+  <zorder>plantask</zorder>
+  <zorder>listWidget</zorder>
+  <zorder>recycle_clear_show</zorder>
+  <zorder>call_wechat</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
