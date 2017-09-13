@@ -10,6 +10,8 @@ QT       += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
+
+
 TARGET = Mysoftware
 TEMPLATE = app
 
@@ -48,3 +50,6 @@ DISTFILES +=
 
 RESOURCES += \
     images.qrc
+
+INCLUDEPATH += . "C:/OpenSSL-Win64/include/"
+LIBS += -L"C:/OpenSSL-Win64/lib/" -llibcrypto -llibssl
