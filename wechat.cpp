@@ -45,17 +45,27 @@ void wechat::login_reply(QNetworkReply *reply){//登录
         if(pos1 > 0 && pos2 > 0){
             wxsid = rx1.cap(1);
             wxuin = rx2.cap(1);
+
+            QJsonObject under_post_json;
+            under_post_json.insert("Uin", wxuin);
+            under_post_json.insert("Sid", wxsid);
+            under_post_json.insert("Skey","");
+            under_post_json.insert("DeviceID", "e1615250492");
             QJsonObject post_json;
-            //post_json.insert("BaseRequest", "");
-            post_json.insert("Uin", wxuin);
-            post_json.insert("Sid", wxsid);
-            post_json.insert("Skey", "");
-            post_json.insert("DeviceID", "e1615250492");
+            post_json.insert("BaseRequest", under_post_json);
+
+
+
+            qDebug()<<post_json;
             QByteArray post_array = QJsonDocument(post_json).toJson();
             QDateTime current_time = QDateTime::currentDateTime();
-            QString url = "http://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=" + current_time.toMSecsSinceEpoch();
-            QNetworkRequest *request = new QNetworkRequest;
-            request->setUrl(QUrl(url));
+            QString str = "http://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=" + QString::number(current_time.toMSecsSinceEpoch());
+            QUrl url(str);
+            qDebug()<<url;
+            QNetworkRequest* request = new QNetworkRequest;
+            request->setUrl(url);
+            request->setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
             QNetworkReply* reply = we_init_manager->post(*request, post_array);
         }
     }

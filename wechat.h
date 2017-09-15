@@ -7,6 +7,7 @@
 #include <QNetworkReply>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonValue>
 
 namespace Ui {
 class wechat;
