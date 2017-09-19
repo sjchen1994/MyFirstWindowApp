@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonValue>
 
+
 namespace Ui {
 class wechat;
 }
@@ -20,6 +21,7 @@ class wechat : public QWidget
 public:
     explicit wechat(QWidget *parent = 0);
     QString we_code;
+
     ~wechat();
 private slots:
     void reply_net(QNetworkReply*);
@@ -32,6 +34,7 @@ private slots:
 private:
     QString wxuin;
     QString wxsid;
+    QString pass_ticket;
     QNetworkAccessManager* we_manager;
     QNetworkAccessManager* we_qrcode_manager;
     QNetworkAccessManager* we_poll_manager;

@@ -18,6 +18,8 @@ wechat::wechat(QWidget *parent) :
     connect(we_poll_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(poll_reply(QNetworkReply*)));
     connect(we_qrcode_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(qrcode_reply(QNetworkReply*)));
     connect(we_manager,SIGNAL(finished(QNetworkReply*)), this, SLOT(reply_net(QNetworkReply*)));
+
+
 }
 
 wechat::~wechat()
@@ -40,11 +42,15 @@ void wechat::login_reply(QNetworkReply *reply){//登录
         QString all = reply->readAll();
         QRegExp rx1("<wxsid>(.*)</wxsid>");
         QRegExp rx2("<wxuin>(.*)</wxuin>");
+        QRegExp rx3("<pass_ticket>(.*)</pass_ticket>");
+
         int pos1 = all.indexOf(rx1);
         int pos2 = all.indexOf(rx2);
-        if(pos1 > 0 && pos2 > 0){
+        int pos3 = all.indexOf(rx3);
+        if(pos1 > 0 && pos2 > 0 && pos3 > 0){
             wxsid = rx1.cap(1);
             wxuin = rx2.cap(1);
+            pass_ticket = rx3.cap(1);
 
             QJsonObject under_post_json;
             under_post_json.insert("Uin", wxuin);
@@ -53,19 +59,15 @@ void wechat::login_reply(QNetworkReply *reply){//登录
             under_post_json.insert("DeviceID", "e1615250492");
             QJsonObject post_json;
             post_json.insert("BaseRequest", under_post_json);
-
-
-
             qDebug()<<post_json;
             QByteArray post_array = QJsonDocument(post_json).toJson();
             QDateTime current_time = QDateTime::currentDateTime();
-            QString str = "http://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=" + QString::number(current_time.toMSecsSinceEpoch());
+            QString str = "http://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=" + QString::number(current_time.toMSecsSinceEpoch()) + "&pass_ticket=" + pass_ticket;
             QUrl url(str);
             qDebug()<<url;
             QNetworkRequest* request = new QNetworkRequest;
             request->setUrl(url);
-            request->setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-
+            request->setHeader(QNetworkRequest::ContentTypeHeader, "application/raw");
             QNetworkReply* reply = we_init_manager->post(*request, post_array);
         }
     }
@@ -77,13 +79,14 @@ void wechat::login_reply(QNetworkReply *reply){//登录
 void wechat::poll_reply(QNetworkReply *reply){
     if(reply->error() == QNetworkReply::NoError){//如果返回window.code = 201; 说明已经扫描二维码
         QString all = reply->readAll();
+        //qDebug()<<all;
         if(all == "window.code=201;"){
             QDateTime current_time = QDateTime::currentDateTime();
             QString str = "http://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login?uuid=" + we_code  + "&tip=1&_=" + QString::number(current_time.toMSecsSinceEpoch());
             we_poll_manager->get(QNetworkRequest(str));
         }
         else{
-            qDebug()<<all;
+            //qDebug()<<all;
             QRegExp rx("https://(.*)\"");
             int pos = all.indexOf(rx);
             if(pos > 0){
@@ -124,7 +127,7 @@ void wechat::reply_net(QNetworkReply *reply){
             QString str = rx.cap(1);
             we_code = str;
             str = "http://login.weixin.qq.com/qrcode/" + str;
-            qDebug()<<str;
+
             we_qrcode_manager->get(QNetworkRequest(str));
         }
 
