@@ -6,20 +6,18 @@ wechat::wechat(QWidget *parent) :
     ui(new Ui::wechat)
 {
     ui->setupUi(this);
+    this->setFixedSize(180, 350);
     we_manager = new QNetworkAccessManager(this);
     we_qrcode_manager = new QNetworkAccessManager(this);
     we_poll_manager = new QNetworkAccessManager(this);
     we_login_manager = new QNetworkAccessManager(this);
     we_init_manager = new QNetworkAccessManager(this);
-    //QSslSocket::addDefaultCaCertificates("cert.pem");
 
     connect(we_init_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(init_reply(QNetworkReply*)));
     connect(we_login_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(login_reply(QNetworkReply*)));
     connect(we_poll_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(poll_reply(QNetworkReply*)));
     connect(we_qrcode_manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(qrcode_reply(QNetworkReply*)));
     connect(we_manager,SIGNAL(finished(QNetworkReply*)), this, SLOT(reply_net(QNetworkReply*)));
-
-
 }
 
 wechat::~wechat()

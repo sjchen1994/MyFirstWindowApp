@@ -190,11 +190,14 @@
   <widget class="QPushButton" name="call_wechat">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>190</y>
-     <width>80</width>
-     <height>20</height>
+     <x>70</x>
+     <y>160</y>
+     <width>41</width>
+     <height>41</height>
     </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
    </property>
    <property name="text">
     <string/>

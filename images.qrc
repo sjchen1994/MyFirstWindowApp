@@ -6,5 +6,6 @@
         <file>image/fanyi.jpg</file>
         <file>image/mem.jpg</file>
         <file>image/main.png</file>
+        <file>image/wechat.jpg</file>
     </qresource>
 </RCC>

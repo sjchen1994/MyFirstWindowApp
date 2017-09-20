@@ -24,6 +24,8 @@ Widget::Widget(QWidget *parent) :
     ui->plantask->setIcon(QIcon(":/image/plan.png"));
     ui->transButton->setIcon(QIcon(":/image/fanyi.jpg"));
     ui->memButton->setIcon(QIcon(":/image/mem.jpg"));
+    ui->call_wechat->setIcon(QIcon("://image/wechat.jpg"));
+    ui->call_wechat->setIconSize(QSize(40, 40));
     //this->setWindowOpacity(0.8);
 
     //托盘图标设置
@@ -113,7 +115,7 @@ void Widget::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     QPixmap pix;
     pix.load("main.png");
-    painter.drawPixmap(0,0,350,500,pix);
+    painter.drawPixmap(0, 0, 350, 500, pix);
 }
 
 QSqlDatabase Widget::initial_database(){
