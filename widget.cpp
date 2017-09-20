@@ -39,15 +39,17 @@ Widget::Widget(QWidget *parent) :
     system_tray->setContextMenu(tray_menu);
     connect(mclose,SIGNAL(triggered(bool)),this,SLOT(closew()));
 
-
     connect(ui->listWidget,SIGNAL(itemDoubleClicked(QListWidgetItem*)),this,SLOT(goto_mem()));
-    //()<<connect(m, SIGNAL(noCord()), this, SLOT(frameHide()));
+
     //数据库
     mem_database = initial_database();
     QSqlQuery tmp_query(mem_database);
     query = tmp_query;
     get_table();
     init_oper();
+
+    wea = new weather;
+    wea->start();
 }
 
 void Widget::init_oper(){
@@ -105,6 +107,37 @@ void Widget::init_oper(){
         file.close();
     }
 
+    //city
+    QFile file_city("city.txt");
+    int notexist = 0;
+    QString g_city;
+    if(file_city.open(QIODevice::ReadOnly)){
+        QTextStream stream_read(&file_city);
+        if(stream_read.readLine() == ""){
+            bool isOk;
+            g_city = QInputDialog::getText(NULL, QString::fromLocal8Bit("初始城市设置"), QString::fromLocal8Bit("请输入城市名称"), QLineEdit::Normal, NULL, &isOk);
+            notexist = 1;
+        }
+        file_city.close();
+    }
+    else{
+       if(file_city.open(QIODevice::WriteOnly | QIODevice::Text)){
+           bool isOk;
+           QString city = QInputDialog::getText(NULL, QString::fromLocal8Bit("初始城市设置"), QString::fromLocal8Bit("请输入城市名称"), QLineEdit::Normal, NULL, &isOk);
+           if(isOk){
+               QTextStream stream(&file_city);
+               stream<<city;
+           }
+       }
+       file_city.close();
+    }
+    if(notexist == 1){
+        if(file_city.open(QIODevice::WriteOnly | QIODevice::Text)){
+            QTextStream stream(&file_city);
+            stream<<g_city;
+        }
+        file_city.close();
+    }
 
 
 }
@@ -337,4 +370,18 @@ void Widget::on_call_wechat_released()
     w = new wechat;
     w->show();
     w->setGeometry(this->x(), this->y()+400, 180, 350);
+}
+
+void Widget::on_set_city_released()
+{
+    QFile file_city("city.txt");
+    if(file_city.open(QIODevice::WriteOnly | QIODevice::Text)){
+        bool isOk;
+        QString city = QInputDialog::getText(NULL, QString::fromLocal8Bit("城市设置"), QString::fromLocal8Bit("请输入城市名称"), QLineEdit::Normal, NULL, &isOk);
+        if(isOk){
+            QTextStream stream(&file_city);
+            stream<<city;
+        }
+    }
+    file_city.close();
 }

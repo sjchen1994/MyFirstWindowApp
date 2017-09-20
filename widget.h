@@ -17,6 +17,7 @@
 #include <QTextEdit>
 #include <windows.h>
 #include <wechat.h>
+#include "weather.h"
 #include "plantask.h"
 #include "mem.h"
 #include "trans.h"
@@ -43,6 +44,7 @@ public:
     mem *m;
     trans *t;
     plantask *p;
+    weather* wea;
     void init_oper();
 private slots:
     void frameHide();
@@ -59,6 +61,8 @@ private slots:
     void on_pushButton_clicked();
 
     void on_call_wechat_released();
+
+    void on_set_city_released();
 
 signals:
     void sendsignal();

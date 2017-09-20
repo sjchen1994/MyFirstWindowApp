@@ -33,13 +33,15 @@ SOURCES += main.cpp\
     mem.cpp \
     trans.cpp \
     plantask.cpp \
-    wechat.cpp
+    wechat.cpp \
+    weather.cpp
 
 HEADERS  += widget.h \
     mem.h \
     trans.h \
     plantask.h \
-    wechat.h
+    wechat.h \
+    weather.h
 
 FORMS    += widget.ui \
     mem.ui \
@@ -52,5 +54,4 @@ DISTFILES +=
 RESOURCES += \
     images.qrc
 
-INCLUDEPATH += . "C:/OpenSSL-Win64/include/"
-LIBS += -L"C:/OpenSSL-Win64/lib/" -llibcrypto -llibssl
+

@@ -203,6 +203,19 @@
     <string/>
    </property>
   </widget>
+  <widget class="QPushButton" name="set_city">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>80</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>设置城市</string>
+   </property>
+  </widget>
   <zorder>pushButton</zorder>
   <zorder>transButton</zorder>
   <zorder>memButton</zorder>
@@ -212,6 +225,7 @@
   <zorder>listWidget</zorder>
   <zorder>recycle_clear_show</zorder>
   <zorder>call_wechat</zorder>
+  <zorder>set_city</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
