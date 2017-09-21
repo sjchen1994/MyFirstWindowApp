@@ -1,8 +1,6 @@
 ﻿#include "widget.h"
 #include "ui_widget.h"
 
-
-
 Widget::Widget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Widget)
@@ -11,6 +9,9 @@ Widget::Widget(QWidget *parent) :
     ui->recycle_clear_show->clear();
     ui->pushButton->setVisible(false);
     this->setAcceptDrops(true);
+    manager = new QNetworkAccessManager;
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(weather_reply(QNetworkReply*)));
+
 
     //设置背景
     this->setAutoFillBackground(true);
@@ -47,9 +48,6 @@ Widget::Widget(QWidget *parent) :
     query = tmp_query;
     get_table();
     init_oper();
-
-    wea = new weather;
-    wea->start();
 }
 
 void Widget::init_oper(){
@@ -140,6 +138,58 @@ void Widget::init_oper(){
     }
 
 
+    //获取天气
+    QProcess* p = new QProcess;;
+    p->start("cmd", QStringList()<<"/c"<<"ping www.baidu.com");
+    p->waitForStarted();
+    p->waitForFinished();
+    QString all = QString::fromLocal8Bit(p->readAll());
+    if(!all.contains("请求超时")){
+        QFile file_read("city.txt");
+        if(file_read.open(QIODevice::ReadOnly)){
+            QTextStream stream(&file_read);
+            QString city = stream.readLine();
+            QMap<QString,QString> city_map;
+            insert_map(city_map);
+            QString city_code = city_map.find(city).value();
+            QString url = "http://api.yytianqi.com/forecast7d?city=" + city_code + "&key=ekqm9oro4ee1kpqg";
+            manager->get(QNetworkRequest(url));
+        }
+        file_read.close();
+    }
+}
+
+void Widget::insert_map(QMap<QString, QString> &map){
+    map.insert("hangzhou", "CH210101");
+    map.insert("huzhou", "CH210201");
+    map.insert("jiaxing", "CH210301");
+    map.insert("ningbo", "CH210401");
+    map.insert("shaoxing", "CH210501");
+    map.insert("taizhou", "CH210601");
+    map.insert("wenzhou", "CH210701");
+    map.insert("lishui", "CH210801");
+    map.insert("jinhua", "CH210901");
+    map.insert("quzhou", "CH211001");
+    map.insert("zhoushan", "CH211101");
+}
+
+void Widget::weather_reply(QNetworkReply *reply){
+    if(reply->error() == QNetworkReply::NoError){
+        QString today = QDate::currentDate().toString("yyyy-MM-dd");
+        QDate tomo = QDate::currentDate().addDays(1);
+        QString tomorrow = tomo.toString("yyyy-MM-dd");
+        QString rxs = today + "\"(.*)" + tomorrow;
+        QRegExp rx(rxs);
+        QString all = reply->readAll();
+        int pos = all.indexOf(rx);
+        if(pos > 0){
+            qDebug()<<rx.cap(1);
+        }
+        //qDebug()<<reply->readAll();
+    }
+    else{
+        qDebug()<<reply->error();
+    }
 }
 
 void Widget::paintEvent(QPaintEvent *event){

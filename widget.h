@@ -15,9 +15,10 @@
 #include <QMessageBox>
 #include <QMouseEvent>
 #include <QTextEdit>
+#include <QInputDialog>
+#include <QRegExp>
 #include <windows.h>
 #include <wechat.h>
-#include "weather.h"
 #include "plantask.h"
 #include "mem.h"
 #include "trans.h"
@@ -34,6 +35,7 @@ class Widget : public QWidget
 public:
     explicit Widget(QWidget *parent = 0);
     ~Widget();
+    void insert_map(QMap<QString, QString> &map);
     QSqlDatabase initial_database();
     QSqlDatabase mem_database;
     QSqlQuery query;
@@ -44,7 +46,6 @@ public:
     mem *m;
     trans *t;
     plantask *p;
-    weather* wea;
     void init_oper();
 private slots:
     void frameHide();
@@ -64,12 +65,14 @@ private slots:
 
     void on_set_city_released();
 
+    void weather_reply(QNetworkReply*);
 signals:
     void sendsignal();
 
 
 
 private:
+    QNetworkAccessManager* manager;
     bool delete_ornot = true;
     QTextEdit *textedit;
     QPoint last;
