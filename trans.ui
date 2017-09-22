@@ -49,6 +49,9 @@
     <property name="text">
      <string>翻译</string>
     </property>
+    <property name="shortcut">
+     <string>Ctrl+Return</string>
+    </property>
    </widget>
    <widget class="QTextBrowser" name="textBrowser">
     <property name="geometry">

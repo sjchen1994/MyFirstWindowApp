@@ -37,6 +37,8 @@ public:
     ~Widget();
     void insert_map(QMap<QString, QString> &map);
     QSqlDatabase initial_database();
+    QString unicode2ch(QString &str);
+    void load_weather_pix(QString str);
     QSqlDatabase mem_database;
     QSqlQuery query;
     int isclosed;
@@ -66,6 +68,8 @@ private slots:
     void on_set_city_released();
 
     void weather_reply(QNetworkReply*);
+    void on_get_weather_released();
+
 signals:
     void sendsignal();
 

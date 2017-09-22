@@ -9,6 +9,8 @@ Widget::Widget(QWidget *parent) :
     ui->recycle_clear_show->clear();
     ui->pushButton->setVisible(false);
     this->setAcceptDrops(true);
+    ui->set_city->setFlat(true);
+    ui->get_weather->setFlat(true);
     manager = new QNetworkAccessManager;
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(weather_reply(QNetworkReply*)));
 
@@ -173,7 +175,7 @@ void Widget::insert_map(QMap<QString, QString> &map){
     map.insert("zhoushan", "CH211101");
 }
 
-void Widget::weather_reply(QNetworkReply *reply){
+void Widget::weather_reply(QNetworkReply *reply){  //获取天气槽函数
     if(reply->error() == QNetworkReply::NoError){
         QString today = QDate::currentDate().toString("yyyy-MM-dd");
         QDate tomo = QDate::currentDate().addDays(1);
@@ -183,13 +185,60 @@ void Widget::weather_reply(QNetworkReply *reply){
         QString all = reply->readAll();
         int pos = all.indexOf(rx);
         if(pos > 0){
-            qDebug()<<rx.cap(1);
+            QString cap_str = rx.cap(1);
+            QRegExp tq1("tq1\":\"(.*)\",\"tq2");
+            QRegExp tq2("tq2\":\"(.*)\",\"numtq1");
+            QRegExp numtq1("numtq1\":\"(.*)\",\"numtq2");
+            QRegExp numtq2("numtq2\":\"(.*)\",\"qw1");
+            QRegExp qw1("qw1\":\"(.*)\",\"qw2");
+            QRegExp qw2("qw2\":\"(.*)\",\"fl1");
+            int pos_tq1 = cap_str.indexOf(tq1);
+            int pos_tq2 = cap_str.indexOf(tq2);
+            int pos_numtq1 = cap_str.indexOf(numtq1);
+            int pos_numtq2 = cap_str.indexOf(numtq2);
+            int pos_qw1 = cap_str.indexOf(qw1);
+            int pos_qw2 = cap_str.indexOf(qw2);
+            if(pos_tq1 > 0 && pos_tq2 > 0 && pos_numtq1 > 0 && pos_numtq2 > 0 && pos_qw1 > 0 && pos_qw2 > 0){//白天天气
+                ui->weather_tq1->setText(unicode2ch(tq1.cap(1)));
+                ui->weather_tq2->setText(unicode2ch(tq2.cap(1)));
+                ui->weather_qw1->setText(qw1.cap(1) + QString::fromLocal8Bit("°C"));
+                ui->weather_qw2->setText(qw2.cap(1) + QString::fromLocal8Bit("°C"));
+                if(QTime::currentTime().hour() >= 18){
+                    load_weather_pix(numtq2.cap(1) + "_1");
+                }
+                else{
+                    load_weather_pix(numtq1.cap(1) + "_0");
+                }
+            }
         }
         //qDebug()<<reply->readAll();
     }
     else{
         qDebug()<<reply->error();
     }
+}
+
+void Widget::load_weather_pix(QString str){//装载天气图标
+    QPixmap pix;
+    QString pix_path = ":/weather/image/weather/" + str + ".png";
+    pix.load(pix_path);
+    pix = pix.scaled(70, 40, Qt::KeepAspectRatio);
+    ui->weather_show->setPixmap(pix);
+    ui->weather_show->show();
+}
+
+QString Widget::unicode2ch(QString &str){
+    while(true){
+        int idx = str.indexOf("\\u");
+        if(idx == -1){
+            break;
+        }
+        QString strhex = str.mid(idx, 6);
+        strhex = strhex.replace("\\u", QString());
+        int nhex = strhex.toInt(0, 16);
+        str.replace(idx, 6, QChar(nhex));
+    }
+    return str;
 }
 
 void Widget::paintEvent(QPaintEvent *event){
@@ -434,4 +483,30 @@ void Widget::on_set_city_released()
         }
     }
     file_city.close();
+    on_get_weather_released();
+}
+
+void Widget::on_get_weather_released()//获取天气信息
+{
+    QProcess* p = new QProcess;;
+    p->start("cmd", QStringList()<<"/c"<<"ping www.baidu.com");
+    p->waitForStarted();
+    p->waitForFinished();
+    QString all = QString::fromLocal8Bit(p->readAll());
+    if(!all.contains("请求超时")){
+        QFile file_read("city.txt");
+        if(file_read.open(QIODevice::ReadOnly)){
+            QTextStream stream(&file_read);
+            QString city = stream.readLine();
+            QMap<QString,QString> city_map;
+            insert_map(city_map);
+            QString city_code = city_map.find(city).value();
+            QString url = "http://api.yytianqi.com/forecast7d?city=" + city_code + "&key=ekqm9oro4ee1kpqg";
+            manager->get(QNetworkRequest(url));
+        }
+        file_read.close();
+    }
+    else{
+        QMessageBox::information(this, QString::fromLocal8Bit("警告"),QString::fromLocal8Bit("网络连接错误！"));
+    }
 }
